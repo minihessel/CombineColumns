@@ -11,8 +11,8 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="ConnectToDifferentDatabases.jar" size="18343" download="eager" />
-    <jar href="lib/mysql-connector-java-5.1.23-bin.jar" size="860409" download="eager" />
+    <jar href="ConnectToDifferentDatabases.jar" size="18272" download="eager" />
+    <jar href="lib/mysql-connector-java-5.1.23-bin.jar" size="860407" download="eager" />
   </resources>
 <security>
   <all-permissions/>

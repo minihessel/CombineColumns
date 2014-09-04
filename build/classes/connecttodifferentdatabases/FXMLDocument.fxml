@@ -6,38 +6,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="768.0" prefWidth="1499.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="connecttodifferentdatabases.FXMLDocumentController">
+<AnchorPane id="AnchorPane" fx:id="anchorPane" prefHeight="768.0" prefWidth="1499.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="connecttodifferentdatabases.FXMLDocumentController">
     <children>
         <Label fx:id="label" layoutX="126" layoutY="120" minHeight="16" minWidth="69" />
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="762.0" prefWidth="516.0">
          <children>
-              <Button fx:id="button" layoutX="173.0" layoutY="722.0" onAction="#handleButtonAction" text="Connect and load" />
-            <TableView fx:id="mysqlTableView" layoutX="113.0" layoutY="393.0" prefHeight="200.0" prefWidth="200.0">
-              <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn onEditStart="#handleButtonAction3" prefWidth="75.0" text="C2" />
-              </columns>
-            </TableView>
-            <Button fx:id="button1" layoutX="432.0" layoutY="708.0" onAction="#handleButtonAction2" text="Connect and load" />
-            <ListView fx:id="listView" layoutX="61.0" layoutY="45.0" prefHeight="200.0" prefWidth="200.0" />
-            <TableView fx:id="oracleTableView" layoutX="360.0" layoutY="456.0" prefHeight="200.0" prefWidth="200.0">
-              <columns>
-                <TableColumn prefWidth="75.0" text="C1" />
-                <TableColumn prefWidth="78.0" text="C2" />
-              </columns>
-            </TableView>
-            <ListView fx:id="listView2" layoutX="344.0" layoutY="45.0" prefHeight="200.0" prefWidth="200.0" />
+              <Button fx:id="button" layoutX="132.0" layoutY="625.0" onAction="#handleButtonAction1" text="Load TB1" />
+            <TableView fx:id="tableView1" layoutX="113.0" layoutY="393.0" prefHeight="200.0" prefWidth="200.0" />
+            <Button fx:id="button1" layoutX="373.0" layoutY="625.0" onAction="#handleButtonAction2" text="Load TB2" />
+            <ListView fx:id="listViewTB1" layoutX="113.0" layoutY="181.0" prefHeight="200.0" prefWidth="200.0" />
+            <ListView fx:id="listViewTB2" layoutX="344.0" layoutY="181.0" prefHeight="200.0" prefWidth="200.0" />
+            <TableView fx:id="tableView2" layoutX="344.0" layoutY="393.0" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="551.0" minHeight="0.0" minWidth="0.0" prefHeight="762.0" prefWidth="516.0">
-         <children>
-            <Label layoutX="213.0" layoutY="14.0" prefHeight="16.0" prefWidth="91.0" text="ORACLE SQL" />
-            <TableView fx:id="tableViewCombined" layoutX="315.0" layoutY="30.0" prefHeight="467.0" prefWidth="585.0" />
-            <Button fx:id="button11" layoutX="396.0" layoutY="728.0" onAction="#handleButtonAction3" text="Connect and load" />
-            <TextField fx:id="textField" layoutX="52.0" layoutY="134.0" />
-            <Label fx:id="label" layoutX="263.0" layoutY="138.0" prefHeight="16.0" prefWidth="688.0" text="MYSQL" />
-            <Button fx:id="button12" layoutX="92.0" layoutY="169.0" onAction="#handleButtonAction4" text="MAP" />
-         </children>
-      </AnchorPane>
+      <TableView fx:id="tableViewCombined" layoutX="715.0" layoutY="125.0" prefHeight="499.0" prefWidth="495.0" />
+      <Button fx:id="button2" layoutX="613.0" layoutY="378.0" onAction="#handleButtonAction" text="Combine" />
     </children>
 </AnchorPane>

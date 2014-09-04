@@ -21,8 +21,7 @@ public class Table {
 
     //ArrayList<Rader> rows = FXCollections.observableArrayList();
     ArrayList<Kolonne> listofColumns;
-    private int antallRader; 
-  
+    private int antallRader;
 
     public Table() {
         listofColumns = new ArrayList<>();
@@ -36,8 +35,8 @@ public class Table {
         ResultSet rs = sql_manager.getDataFromSQL("localhost", 8889, "mysql", SQL);
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
             String kolonneNavn = rs.getMetaData().getColumnName(i);
-            Kolonne kol = new Kolonne(kolonneNavn);
-            
+            Kolonne kol = new Kolonne(kolonneNavn,i-1);
+
             listofColumns.add(kol);
             System.out.println("lzzzzegger til kolonne i settet med navn " + kol);
 
@@ -45,18 +44,39 @@ public class Table {
 
         //deretter legges all dataen til i kolonnene ved hjelp av rader
         while (rs.next()) {
-          //  antallRader++;
+            //  antallRader++;
             for (Kolonne k : listofColumns) {
                 String item = rs.getString(k.NAVN);
                 k.addField(item);
 
             }
-       
 
         }
-     
- 
-            
+
+    }
+
+    public void loadCombinedColumns(List<Kolonne> listOfCombined) {
+
+        Boolean isInteger = false;
+        Boolean isString = false;
+        for (Kolonne kol : listOfCombined) {
+
+            if (checkForInteger.isInteger(kol.allFields().get(0))) {
+                isInteger = true;
+
+            } else if (checkForInteger.isInteger(kol.allFields().get(0)) == false) {
+                isString = true;
+
+            }
+        }
+        if (isInteger && isString == false || isString && isInteger == false) {
+
+            Kolonne kolComb = new Kolonne(listOfCombined, "Kombinert",1);
+            listofColumns.add(kolComb);
+
+        } else {
+            System.out.println("kombo not allowed");
+        }
 
     }
 
@@ -68,9 +88,8 @@ public class Table {
         ObservableList<List<String>> dataen = FXCollections.observableArrayList();
         //først henter vi ut alle kolonnene og legger til de i tableview
         int counter = 0;
-            Kolonne kolComb = new Kolonne(listofColumns.get(0),listofColumns.get(1),"qq");
-        listofColumns.add(kolComb);
-       // System.out.println("kaska kaka " + listofColumns.size());
+
+        // System.out.println("kaska kaka " + listofColumns.size());
         for (Kolonne kol : listofColumns) {
             //We are using non property style for making dynamic table
 
@@ -83,9 +102,9 @@ public class Table {
                 }
             });
 
-        
             col.prefWidthProperty().bind(tableView.widthProperty().divide(4)); //for å automatisere bredden på kolonnene 
             //col.setGraphic(new CheckBox());
+            col.setUserData(counter);
             tableView.getColumns().add(col);
 //System.out.println("enototot");
             counter++;
@@ -94,29 +113,23 @@ public class Table {
         int teller = 0;
         for (int a = 0; a <= 3; a++) {
             ObservableList<String> row = FXCollections.observableArrayList();
-           Boolean riktig = false;
+            Boolean riktig = false;
             for (int i = 1; i <= listofColumns.size(); i++) {
                 Kolonne kol = listofColumns.get(i - 1);
-      
-              
-                
-               try {
-                   row.add(kol.allFields().get(teller));
-                   riktig = true; 
-               }
-              
-               catch (IndexOutOfBoundsException e)
-               {
-               row.add( " ");}
-               
-              //  System.out.println("Verdien " + kol.allFields().get(teller));
 
+                try {
+                    row.add(kol.allFields().get(teller));
+                    riktig = true;
+                } catch (IndexOutOfBoundsException e) {
+                    row.add(" ");
+                }
+
+                //  System.out.println("Verdien " + kol.allFields().get(teller));
             }
             teller++;
-       
+
             dataen.add(row);
-            
-            
+
         }
 
         tableView.setItems(dataen);
