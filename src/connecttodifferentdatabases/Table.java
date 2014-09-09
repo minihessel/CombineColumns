@@ -3,7 +3,7 @@ package connecttodifferentdatabases;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -55,7 +55,7 @@ public class Table {
 
     }
 
-    public void loadCombinedColumns(List<Kolonne> listOfCombined) {
+    public void loadCombinedColumns(List<Kolonne> listOfCombined,String navn,int howManyTables) {
 
         Boolean isInteger = false;
         Boolean isString = false;
@@ -70,8 +70,10 @@ public class Table {
             }
         }
         if (isInteger && isString == false || isString && isInteger == false) {
-
-            Kolonne kolComb = new Kolonne(listOfCombined, "Kombinert",1);
+        
+        
+       
+            Kolonne kolComb = new Kolonne(listOfCombined, navn);
             listofColumns.add(kolComb);
 
         } else {
@@ -79,6 +81,8 @@ public class Table {
         }
 
     }
+    
+
 
     public String storString() {
         return listofColumns.toString();

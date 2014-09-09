@@ -11,25 +11,25 @@ import java.util.List;
 class Kolonne {
 
     public final String NAVN;
-    public final Integer KOLONNEINDEX;
+  
 
     private List<String> fields;
 
     Kolonne(String kolonneNavn,Integer kolonneIndex) {
         NAVN = kolonneNavn;
-        KOLONNEINDEX = kolonneIndex;
+      
         
         fields = new ArrayList<>();
     }
 
-    public Kolonne(List<Kolonne> listOfColumns, String navn,Integer kolonneIndex){
+    public Kolonne(List<Kolonne> listOfColumns, String navn){
         fields = new ArrayList<>();  
         for (Kolonne kol: listOfColumns){
             fields.addAll(kol.fields);
         }
         
         NAVN= navn; 
-        KOLONNEINDEX=kolonneIndex;
+     
     }
 
   
