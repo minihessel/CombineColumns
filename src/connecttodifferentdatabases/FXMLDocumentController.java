@@ -125,45 +125,8 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private void handleButtonAction(ActionEvent event) throws SQLException {
 
-        tbl3.listofColumns.clear();
-        tableViewCombined.getItems().clear();
-        tableViewCombined.getColumns().clear();
-     
-        int counter = 0;
-        for (List<Kolonne> list : ListOfLists) {
+        makeTableViewWithCombinedColumns(tbl3, tableViewCombined);
 
-            Collections.sort(list, new MyTableComp());
-            for(Kolonne kol : list)
-            {
-            
-                tbl3.numberofRows += kol.allFields().size(); 
-                        
-            }
-            tbl3.loadCombinedColumns(list, listOfColumnNames.get(counter), tbl3);
-            counter++;
-        }
-
-        tableViewCombined = tbl3.makeTableView(tableViewCombined,tbl3);
-
-    }
-
-    class MyTableComp implements Comparator<Kolonne> {
-
-        @Override
-        public int compare(Kolonne e1, Kolonne e2) {
-            int kolonne1TableNumber = e1.tbl.tableNumber;
-            int kolonne2TableNumber = e2.tbl.tableNumber;
-            if (kolonne1TableNumber < kolonne2TableNumber) {
-
-                return -1;
-            } else if (kolonne1TableNumber == kolonne2TableNumber) {
-
-                return 0;
-
-            } else {
-                return 1;
-            }
-        }
     }
 
     @FXML
@@ -210,6 +173,38 @@ public class FXMLDocumentController implements Initializable {
 
     }
 
+    private void makeTableViewWithCombinedColumns(Table tbl, TableView tableView) {
+        tbl.listofColumns.clear();
+        tableView.getItems().clear();
+        tableView.getColumns().clear();
+
+        int counter = 0;
+        tbl.numberofRows = 0;
+        //Først looper vi igjennom listen av lister med kolonner(med andre ord er en liste i denne listen en kombinert kolonne)
+        for (List<Kolonne> list : ListOfLists) {
+            Collections.sort(list, new ColumnTableComperator());
+            int antallRader = 0;
+
+            //deretter looper vi igjennom alle kolonnene i den kombinerte kolonnen for å sjekke hvor mange rader det er
+            for (Kolonne kol : list) {
+
+                antallRader += kol.tbl.numberofRows;
+            }
+            //Hvis det er FLER rader i denne kombinerte kolonnen i noe annet i tbl3, blir dette antall rader. Dette fordi en kolonne kan ha 7 rader, mens en annen 6
+            if (antallRader > tbl.numberofRows) {
+                tbl.numberofRows
+                        = antallRader;
+            }
+
+            //Deretter lager vi den kombinerte kolonnen
+            tbl.loadCombinedColumns(list, listOfColumnNames.get(counter), tbl);
+            counter++;
+        }
+
+        //deretter lager vi tableviewet med alle de kombinerte kolonnene. 
+        tableView = tbl.makeTableView(tableView, tbl);
+    }
+
     private void createTabPaneWithTable() throws SQLException {
         VBox vBox = new VBox();
 
@@ -222,7 +217,7 @@ public class FXMLDocumentController implements Initializable {
         tablesList.add(tabPaneCounter, tabellen);
         TableView tableViewet = new TableView();
         vBox.getChildren().add(tableViewet);
-        tableViewet = tabellen.makeTableView(tableViewet,tabellen);
+        tableViewet = tabellen.makeTableView(tableViewet, tabellen);
         vBox.setId("" + tabPaneCounter);
 
         MenuItem menuItem = new MenuItem("GRUPPE");

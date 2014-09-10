@@ -64,7 +64,8 @@ public class Table {
         Boolean isInteger = false;
         Boolean isString = false;
         for (Kolonne kol : listOfCombined) {
-
+            
+            
             if (checkForInteger.isInteger(kol.allFields().get(0))) {
                 isInteger = true;
 
@@ -76,8 +77,9 @@ public class Table {
         if (isInteger && isString == false || isString && isInteger == false) {
         
         
-       
+            
             Kolonne kolComb = new Kolonne(listOfCombined, navn,tbl);
+     
             listofColumns.add(kolComb);
 
         } else {

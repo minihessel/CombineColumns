@@ -12,7 +12,7 @@ import java.util.Comparator;
  * 
  * @author Eskil Hesselroth
  */
-class MyTableComp implements Comparator<Kolonne> {
+class ColumnTableComperator implements Comparator<Kolonne> {
 
         @Override
         public int compare(Kolonne e1, Kolonne e2) {
