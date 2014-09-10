@@ -9,6 +9,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +23,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
@@ -49,7 +51,6 @@ import org.controlsfx.dialog.Dialogs;
 public class FXMLDocumentController implements Initializable {
 
     private ArrayList<TreeView> listemedView = new ArrayList<TreeView>();
-
 
     private ArrayList<VBox> vBoxes = new ArrayList<VBox>();
     public int tabPaneCounter = 0;
@@ -98,15 +99,14 @@ public class FXMLDocumentController implements Initializable {
 
     //Map  = new HashMap();
     Map<TreeItem, List> vehicles = new HashMap<TreeItem, List>();
-    
-        Map<List, Table> tablesAndColumns = new HashMap<List, Table>();
+
+    Map<List, Table> tablesAndColumns = new HashMap<List, Table>();
 
     Tab combinedTab = new Tab();
 
     private VBox vBox2 = new VBox();
 
     TreeItem<String> newRoot = new TreeItem<String>("List of combined columns");
-    private final Node rootIcon = new ImageView(new Image(getClass().getResourceAsStream("root.png")));
 
     Image nodeImage = new Image(
             getClass().getResourceAsStream("root.png"));
@@ -128,18 +128,42 @@ public class FXMLDocumentController implements Initializable {
         tbl3.listofColumns.clear();
         tableViewCombined.getItems().clear();
         tableViewCombined.getColumns().clear();
-
+     
         int counter = 0;
         for (List<Kolonne> list : ListOfLists) {
-            Table whichTable = tablesAndColumns.get(list);
-          
 
-            tbl3.loadCombinedColumns(list, listOfColumnNames.get(counter),  tablesList.size());
+            Collections.sort(list, new MyTableComp());
+            for(Kolonne kol : list)
+            {
+            
+                tbl3.numberofRows += kol.allFields().size(); 
+                        
+            }
+            tbl3.loadCombinedColumns(list, listOfColumnNames.get(counter), tbl3);
             counter++;
         }
 
-        tableViewCombined = tbl3.makeTableView(tableViewCombined);
+        tableViewCombined = tbl3.makeTableView(tableViewCombined,tbl3);
 
+    }
+
+    class MyTableComp implements Comparator<Kolonne> {
+
+        @Override
+        public int compare(Kolonne e1, Kolonne e2) {
+            int kolonne1TableNumber = e1.tbl.tableNumber;
+            int kolonne2TableNumber = e2.tbl.tableNumber;
+            if (kolonne1TableNumber < kolonne2TableNumber) {
+
+                return -1;
+            } else if (kolonne1TableNumber == kolonne2TableNumber) {
+
+                return 0;
+
+            } else {
+                return 1;
+            }
+        }
     }
 
     @FXML
@@ -179,8 +203,7 @@ public class FXMLDocumentController implements Initializable {
         ListOfLists.add(listen);
         listOfColumnNames.add(treItem.getValue().toString());
         vehicles.put(treItem, ListOfLists.get(ListOfLists.size() - 1));
-  
-   
+
         System.out.println("HER " + ListOfLists.get(treeViewCombined.getRoot().getChildren().size()));
 
         newRoot.getChildren().add(treItem);
@@ -194,12 +217,12 @@ public class FXMLDocumentController implements Initializable {
         String query = textField.getText();
         sql_manager.getConnection("localhost", 8889, "eskildb");
 
-        tabellen.loadData(query, sql_manager);
+        tabellen.loadData(query, sql_manager, tabellen, tabPaneCounter);
 
         tablesList.add(tabPaneCounter, tabellen);
         TableView tableViewet = new TableView();
         vBox.getChildren().add(tableViewet);
-        tableViewet = tabellen.makeTableView(tableViewet);
+        tableViewet = tabellen.makeTableView(tableViewet,tabellen);
         vBox.setId("" + tabPaneCounter);
 
         MenuItem menuItem = new MenuItem("GRUPPE");
@@ -242,16 +265,6 @@ public class FXMLDocumentController implements Initializable {
 
     private void addDragAndDrop(TreeCell<String> treeCell) {
 
-        /*    treeCell.setOnMouseClicked(new EventHandler<MouseEvent>(){
-         @Override
-         public void handle(MouseEvent event) {
-         treeView.setEditable(true);
-         treeView.edit(treeCell.getTreeItem());
-            
-         }
-            
-             
-         });**/
         treeCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             int clickCount = 0;
@@ -317,24 +330,20 @@ public class FXMLDocumentController implements Initializable {
             public void handle(DragEvent event) {
 
                 /* if there is a string data on dragboard, read it and use it */
-                //Dragboard db = event.getDragboard();
                 if (DRAGGEDSOURCE != null && DRAGGEDTARGET != null) {
 
                     System.out.println("hva med her");
 
-                    // treeCell.getTreeView()
                     DRAGGEDTARGET.getChildren().add(DRAGGEDSOURCE);
 
-                    //   System.out.println(treeCell.getTreeItem());
                     System.out.println("skjer det");
 
                     int hvilkenTabell = Integer.parseInt(tabPane.getSelectionModel().getSelectedItem().getId());
                     System.out.println(hvilkenTabell);
-                    
+
                     vehicles.get(treeCell.getTreeItem()).add(tablesList.get(hvilkenTabell).listofColumns.get(DRAGGEDINDEX));
-                  
-                 tablesAndColumns.put(vehicles.get(treeCell.getTreeItem()), tablesList.get(hvilkenTabell));
-             
+
+                    tablesAndColumns.put(vehicles.get(treeCell.getTreeItem()), tablesList.get(hvilkenTabell));
 
                 }
 
@@ -345,15 +354,6 @@ public class FXMLDocumentController implements Initializable {
 
                 event.consume();
 
-              //  listofCombined.add(tablesList.get(Integer.parseInt(tabPane.getSelectionModel().getSelectedItem().getId())).listofColumns.get(DRAGGEDINDEX-1));
-                    //  rootNode2.getChildren().add(DRAGGEDSOURCE);
-                // if (db.hasString()) {
-                //     target.setText(db.getString());
-                //  success = true;
-                //  }
-                        /* let the source know whether the string was successfully
-                 * transferred and used */
-                // treeView2.getRoot().getChildren().add(DRAGGEDTARGET);
             }
 
         });

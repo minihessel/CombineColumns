@@ -1,41 +1,38 @@
 package connecttodifferentdatabases;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  *
  * @author Eskil Hesselroth
  */
-class Kolonne {
+public class Kolonne  {
 
     public final String NAVN;
-  
+        public final Table tbl; 
+
 
     private List<String> fields;
 
-    Kolonne(String kolonneNavn,Integer kolonneIndex) {
+    public Kolonne(String kolonneNavn,Integer kolonneIndex,Table tbl1) {
         NAVN = kolonneNavn;
-      
+         tbl = tbl1;
+
         
         fields = new ArrayList<>();
     }
 
-    public Kolonne(List<Kolonne> listOfColumns, String navn){
+    public Kolonne(List<Kolonne> listOfColumns, String navn,Table tbl1){
         fields = new ArrayList<>();  
         for (Kolonne kol: listOfColumns){
             fields.addAll(kol.fields);
         }
-        
+        tbl= tbl1;
         NAVN= navn; 
+
      
     }
-
-  
-       
-        
-  
 
 
   
@@ -59,4 +56,8 @@ class Kolonne {
     public String toString() {
         return NAVN + fields.toString();
     }
+
+
+
+    
 }
