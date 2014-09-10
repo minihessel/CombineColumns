@@ -5,13 +5,10 @@
  */
 package connecttodifferentdatabases;
 
-import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +20,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.MenuItem;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -43,6 +40,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.dialog.Dialogs;
+import org.fxmisc.easybind.EasyBind;
 
 /**
  *
@@ -59,6 +57,7 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private TextField textField;
+ 
 
     @FXML
     private TreeView treeViewCombined;
@@ -85,7 +84,7 @@ public class FXMLDocumentController implements Initializable {
     ObservableList<List<String>> dataforOracle = FXCollections.observableArrayList();
     ObservableList<List<String>> dataCombined = FXCollections.observableArrayList();
 
-    List<List<Kolonne>> ListOfLists = new ArrayList<List<Kolonne>>();
+    List<List<Kolonne>> listOfCombinedColumns = new ArrayList<List<Kolonne>>();
     List<String> listOfColumnNames = new ArrayList<String>();
 
     private ArrayList<Table> tablesList = new ArrayList<Table>();
@@ -96,9 +95,11 @@ public class FXMLDocumentController implements Initializable {
     AnchorPane anchorPane;
     @FXML
     AnchorPane anchorPane2;
+       @FXML
+    PieChart pieChart; 
 
     //Map  = new HashMap();
-    Map<TreeItem, List> vehicles = new HashMap<TreeItem, List>();
+    Map<TreeItem, List> mapOverKolonnerOgTreItems = new HashMap<TreeItem, List>();
 
     Map<List, Table> tablesAndColumns = new HashMap<List, Table>();
 
@@ -106,7 +107,7 @@ public class FXMLDocumentController implements Initializable {
 
     private VBox vBox2 = new VBox();
 
-    TreeItem<String> newRoot = new TreeItem<String>("List of combined columns");
+    TreeItem<String> kombinerteKolonnerRoot = new TreeItem<String>("List of combined columns");
 
     Image nodeImage = new Image(
             getClass().getResourceAsStream("root.png"));
@@ -126,6 +127,8 @@ public class FXMLDocumentController implements Initializable {
     private void handleButtonAction(ActionEvent event) throws SQLException {
 
         makeTableViewWithCombinedColumns(tbl3, tableViewCombined);
+        tabPane.getSelectionModel().select(0);
+        getPieChartData(0, 1);
 
     }
 
@@ -141,17 +144,24 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void handleCreateNewCombined(ActionEvent event) throws SQLException {
+        createNewCombinedColumn();
+
+    }
+
+    private void createNewCombinedColumn() {
+        //metode for å lage en ny kombinert kolonne
+        //først lager vi trenoden i treeviewen
         TreeItem treItem = new TreeItem(" ", new ImageView(nodeImage));
         System.out.println(treItem.getGraphic());
 
+        //vi puncher ut en melding og spør brukeren hva han vil kalle den kombinerte kolonnen
         Optional<String> response = Dialogs.create()
                 .title("Text Input Dialog")
                 .masthead("Look, a Text Input Dialog")
                 .message("Please enter your name:")
                 .showTextInput("walter");
 
-        final String navnetPaaKolonnen;
-// The Java 8 way to get the response value (with lambda expression).
+        //den kombinerte kolonnen skal hete:
         response.ifPresent(name
                 -> treItem.setValue(name));
 
@@ -160,17 +170,18 @@ public class FXMLDocumentController implements Initializable {
 
         }
 
+        //noden i treeviewet skal være utvidet
         treItem.expandedProperty().set(true);
 
-        List<Kolonne> listen = new ArrayList<Kolonne>();
-        ListOfLists.add(listen);
+        //vi lager en liste(som tilsvarer en kombinert kolonne). Listen skal inneholde kolonner(altså den kombinerte kolonnen skal inneholde hvilke kolonner den skal være)   
+        List<Kolonne> combinedColumn = new ArrayList<Kolonne>();
+        //vi legger til den nye combinedColumn(den nye kombinerte kolonnen i combinedColumn over kombinerte kolonner
+        listOfCombinedColumns.add(combinedColumn);
         listOfColumnNames.add(treItem.getValue().toString());
-        vehicles.put(treItem, ListOfLists.get(ListOfLists.size() - 1));
-
-        System.out.println("HER " + ListOfLists.get(treeViewCombined.getRoot().getChildren().size()));
-
-        newRoot.getChildren().add(treItem);
-
+        //deretter mapper vi den nye kombinerte kolonnen opp mot treitemet, sånn at vi senere kan hente ut den kombinerte kolonnen
+        mapOverKolonnerOgTreItems.put(treItem, listOfCombinedColumns.get(listOfCombinedColumns.size() - 1));
+        //Deretter putter vi kolonnen i treeviewet for kombinerte kolonner
+        kombinerteKolonnerRoot.getChildren().add(treItem);
     }
 
     private void makeTableViewWithCombinedColumns(Table tbl, TableView tableView) {
@@ -180,8 +191,8 @@ public class FXMLDocumentController implements Initializable {
 
         int counter = 0;
         tbl.numberofRows = 0;
-        //Først looper vi igjennom listen av lister med kolonner(med andre ord er en liste i denne listen en kombinert kolonne)
-        for (List<Kolonne> list : ListOfLists) {
+        //Først looper vi igjennom combinedColumn av lister med kolonner(med andre ord er en liste i denne combinedColumn en kombinert kolonne)
+        for (List<Kolonne> list : listOfCombinedColumns) {
             Collections.sort(list, new ColumnTableComperator());
             int antallRader = 0;
 
@@ -202,26 +213,32 @@ public class FXMLDocumentController implements Initializable {
         }
 
         //deretter lager vi tableviewet med alle de kombinerte kolonnene. 
-        tableView = tbl.makeTableView(tableView, tbl);
+        tableView = tbl.fillTableView(tableView, tbl);
     }
 
     private void createTabPaneWithTable() throws SQLException {
+        //Hver gang brukeren kobler til en ny tabell, lager vi en ny tabpane
+        //dette for å kunne organisere tabeller og vite hvilken rekkefølge de er i
         VBox vBox = new VBox();
 
         Table tabellen = new Table();
         String query = textField.getText();
+
+        //her skjer oppkoblingen
         sql_manager.getConnection("localhost", 8889, "eskildb");
 
+        //laster inn dataen med en query
         tabellen.loadData(query, sql_manager, tabellen, tabPaneCounter);
 
+        //legger til den nye tilkoblede tabellen i listen over tilkoblede tabeller
         tablesList.add(tabPaneCounter, tabellen);
         TableView tableViewet = new TableView();
+        //legger til tableviewet i tabben
         vBox.getChildren().add(tableViewet);
-        tableViewet = tabellen.makeTableView(tableViewet, tabellen);
+        tableViewet = tabellen.fillTableView(tableViewet, tabellen);
         vBox.setId("" + tabPaneCounter);
 
-        MenuItem menuItem = new MenuItem("GRUPPE");
-
+        //lager en ny treeview med en liste over alle kolonnene i tabellen
         TreeView treeView = new TreeView();
 
         TreeItem<String> treeView2Root = new TreeItem<String>("MYSQL");
@@ -242,7 +259,7 @@ public class FXMLDocumentController implements Initializable {
                 .message("Please enter your name:")
                 .showTextInput("walter");
 
-// The Java 8 way to get the response value (with lambda expression).
+        //spør brukeren hva denne tabpanen skal hete
         response.ifPresent(name
                 -> tab.setText(name));
 
@@ -255,11 +272,15 @@ public class FXMLDocumentController implements Initializable {
         tab.setContent(vBox);
         tab.setId("" + tabPaneCounter);
         vBox.getChildren().add(treeView);
+
         tabPaneCounter++;
+
+        tabPane.getSelectionModel().select(tabPaneCounter);
     }
 
     private void addDragAndDrop(TreeCell<String> treeCell) {
-
+        //denne metoden legger til mulighet for drag and drop på treeviews.
+        //ved å legge til drag and drop kan brukeren dra kolonner for å lage kombinerte kolonner. 
         treeCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
             int clickCount = 0;
@@ -285,6 +306,7 @@ public class FXMLDocumentController implements Initializable {
         });
 
         treeCell.setOnDragDetected(new EventHandler<MouseEvent>() {
+            //brukeren har tatt tak i et treitem og drar det
             @Override
             public void handle(MouseEvent event) {
                 System.out.println("setOnDragDetected");
@@ -295,7 +317,9 @@ public class FXMLDocumentController implements Initializable {
 
                 content.putString(event.toString());
                 db.setContent(content);
+                //Først setter vi hvilket item brukeren har tatt tak i
                 DRAGGEDSOURCE = treeCell.getTreeItem();
+                //og hvilken index det har
                 DRAGGEDINDEX = (treeCell.getTreeView().getSelectionModel().getSelectedIndex());
 
                 event.consume();
@@ -304,13 +328,13 @@ public class FXMLDocumentController implements Initializable {
         });
 
         treeCell.setOnDragOver(new EventHandler<DragEvent>() {
+            //brukeren har dragget det over et element
             public void handle(DragEvent event) {
 
                 DRAGGEDTARGET = treeCell.getTreeItem();
+
                 if (event.getGestureSource() != treeCell
                         && event.getDragboard().hasString()) {
-
-                    System.out.println("DU ER OVER");
 
                     event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
 
@@ -324,21 +348,37 @@ public class FXMLDocumentController implements Initializable {
         treeCell.setOnDragDropped(new EventHandler<DragEvent>() {
             public void handle(DragEvent event) {
 
-                /* if there is a string data on dragboard, read it and use it */
+                //brukeren har sluppet elementet og vi må sjekke at elementet brukeren drar over faktisk er et treitem
+                //dette for å sørge for at brukeren ikke kan slippe tre itemet hvor som helst
                 if (DRAGGEDSOURCE != null && DRAGGEDTARGET != null) {
+                    if (DRAGGEDTARGET.getGraphic() != null) {
+                        System.out.println("hva med her");
 
-                    System.out.println("hva med her");
+                        DRAGGEDTARGET.getChildren().add(DRAGGEDSOURCE);
 
-                    DRAGGEDTARGET.getChildren().add(DRAGGEDSOURCE);
+                        System.out.println("skjer det");
 
-                    System.out.println("skjer det");
+                        int hvilkenTabell = Integer.parseInt(tabPane.getSelectionModel().getSelectedItem().getId());
+                        System.out.println(hvilkenTabell);
 
-                    int hvilkenTabell = Integer.parseInt(tabPane.getSelectionModel().getSelectedItem().getId());
-                    System.out.println(hvilkenTabell);
+                        //kaller på den kombinerte kolonnen ved å bruke map og sende inn treitemet
+                        //deretter sier vi at vi skal legge til denne kolonnen i den kombinerte kolonnen
+                        mapOverKolonnerOgTreItems.get(treeCell.getTreeItem()).add(tablesList.get(hvilkenTabell).listofColumns.get(DRAGGEDINDEX));
+                    } else {
+                        Dialogs.create()
+                                .title("Information Dialog")
+                                .masthead(null)
+                                .message("This is not a combined column head")
+                                .showInformation();
 
-                    vehicles.get(treeCell.getTreeItem()).add(tablesList.get(hvilkenTabell).listofColumns.get(DRAGGEDINDEX));
-
-                    tablesAndColumns.put(vehicles.get(treeCell.getTreeItem()), tablesList.get(hvilkenTabell));
+                        treeCell.setText("asd");
+                    }
+                } else {
+                    Dialogs.create()
+                            .title("Information Dialog")
+                            .masthead(null)
+                            .message("You got to drag the column on to a combined column head")
+                            .showInformation();
 
                 }
 
@@ -357,14 +397,34 @@ public class FXMLDocumentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        treeViewCombined.setRoot(newRoot);
+        treeViewCombined.setRoot(kombinerteKolonnerRoot);
         treeViewCombined.setShowRoot(false);
         makeTreeViewDragAble(treeViewCombined);
 
-        Tab tab2 = new Tab("Combine columns");
+        Tab tab2 = new Tab("Combined columns");
+        vBox2.getChildren().add(tableViewCombined);
         tab2.setContent(vBox2);
         tabPane.getTabs().add(tab2);
 
+    }
+    
+    
+      protected void getPieChartData(Integer userChosenDataValueColumnIndex, Integer userChosenDataNameColumnIndex) {
+         userChosenDataNameColumnIndex = 0;
+           userChosenDataValueColumnIndex= 1;
+    ObservableList<List<String>> dataen = FXCollections.observableArrayList();
+    dataen = tbl3.dataen;
+        System.out.println("Kolonne id for data er " + userChosenDataValueColumnIndex + "Kolonne id for name er " + userChosenDataNameColumnIndex);
+        ObservableList<PieChart.Data> pieChartData
+                = FXCollections.observableArrayList(EasyBind.map(dataen, rowData -> {
+                    String name = (String) rowData.get(0);
+                    int value = Integer.parseInt(rowData.get(1));
+                    return new PieChart.Data(name, value);
+                }));
+        System.out.println("aa " + pieChartData.get(0));
+        pieChart.setData(pieChartData);
+
+        
     }
 
     private void makeTreeViewDragAble(TreeView treeView) {
@@ -394,11 +454,6 @@ public class FXMLDocumentController implements Initializable {
         });
     }
 
-    static class ImageImpl extends Image {
-
-        public ImageImpl(InputStream resourceAsStream) {
-            super(resourceAsStream);
-        }
-    }
-
+      
+    
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
@@ -16,6 +17,7 @@
             <TextField fx:id="textField" layoutX="84.0" layoutY="55.0" text="The query" />
             <Button fx:id="button21" layoutX="23.0" layoutY="236.0" onAction="#handleCreateNewCombined" text="Create new combined column" />
             <Button fx:id="button22" layoutX="98.0" layoutY="332.0" onAction="#handleButtonAction4" text="Combine" />
+            <PieChart fx:id="pieChart" layoutX="-23.0" layoutY="480.0" prefHeight="268.0" prefWidth="323.0" />
          </children>
       </AnchorPane>
       <TableView fx:id="tableViewCombined" layoutX="1004.0" layoutY="255.0" prefHeight="499.0" prefWidth="495.0" />

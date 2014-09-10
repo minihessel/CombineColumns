@@ -11,9 +11,10 @@
   </resources>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="ConnectToDifferentDatabases.jar" size="32201" download="eager" />
-    <jar href="lib/controlsfx-8.0.6.jar" size="916058" download="eager" />
-    <jar href="lib/mysql-connector-java-5.1.23-bin.jar" size="860408" download="eager" />
+    <jar href="ConnectToDifferentDatabases.jar" size="29502" download="eager" />
+    <jar href="lib/controlsfx-8.0.6.jar" size="916057" download="eager" />
+    <jar href="lib/easybind-1.0.2.jar" size="49011" download="eager" />
+    <jar href="lib/mysql-connector-java-5.1.23-bin.jar" size="860404" download="eager" />
   </resources>
 <security>
   <all-permissions/>

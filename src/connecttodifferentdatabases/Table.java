@@ -19,28 +19,30 @@ import javafx.util.Callback;
  */
 public class Table {
 
+    //En tabell må ha antall rader og hvilken tabell det er i alle tabellene(indeksen i en liste av tabeller)
     //ArrayList<Rader> rows = FXCollections.observableArrayList();
     ArrayList<Kolonne> listofColumns;
     int tableNumber;
     int numberofRows;
+    ObservableList<List<String>> dataen;
 
     public Table() {
         listofColumns = new ArrayList<>();
-        
+    dataen = FXCollections.observableArrayList();
 
     }
 
     /**
      * Laster inn data fra angitt tabell fra angitt db. Bruker har valgt hvilken tabell - vi laster inn kolonner og rader i tableview
      */
-    public void loadData(String SQL, SQL_manager sql_manager,Table tbl,int tableNumb) throws SQLException {
-       numberofRows = 0; 
+    public void loadData(String SQL, SQL_manager sql_manager, Table tbl, int tableNumb) throws SQLException {
+        numberofRows = 0;
         tableNumber = tableNumb;
         ResultSet rs = sql_manager.getDataFromSQL("localhost", 8889, "mysql", SQL);
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
             String kolonneNavn = rs.getMetaData().getColumnName(i);
-            Kolonne kol = new Kolonne(kolonneNavn,i-1,tbl);
-        
+            Kolonne kol = new Kolonne(kolonneNavn, i - 1, tbl);
+
             listofColumns.add(kol);
             System.out.println("lzzzzegger til kolonne i settet med navn " + kol);
 
@@ -52,20 +54,21 @@ public class Table {
             for (Kolonne k : listofColumns) {
                 String item = rs.getString(k.NAVN);
                 k.addField(item);
-                
+
             }
 
         }
 
     }
 
-    public void loadCombinedColumns(List<Kolonne> listOfCombined,String navn,Table tbl) {
-      
+    //metoden for å kombinere flere kolonner sammen
+    public void loadCombinedColumns(List<Kolonne> listOfCombined, String navn, Table tbl) {
+
         Boolean isInteger = false;
         Boolean isString = false;
         for (Kolonne kol : listOfCombined) {
-            
-            
+
+            //har brukeren faktisk sendt i en kolonne som enten inneholder streng eller int?
             if (checkForInteger.isInteger(kol.allFields().get(0))) {
                 isInteger = true;
 
@@ -75,11 +78,9 @@ public class Table {
             }
         }
         if (isInteger && isString == false || isString && isInteger == false) {
-        
-        
-            
-            Kolonne kolComb = new Kolonne(listOfCombined, navn,tbl);
-     
+
+            Kolonne kolComb = new Kolonne(listOfCombined, navn, tbl);
+
             listofColumns.add(kolComb);
 
         } else {
@@ -87,21 +88,20 @@ public class Table {
         }
 
     }
-    
-
 
     public String storString() {
         return listofColumns.toString();
     }
 
-    public TableView makeTableView(TableView tableView,Table tbl) {
-        ObservableList<List<String>> dataen = FXCollections.observableArrayList();
+    public TableView fillTableView(TableView tableView, Table tbl) {
+        //Metode for å fylle tableview med kolonner og rader
+      
         //først henter vi ut alle kolonnene og legger til de i tableview
         int counter = 0;
 
-        // System.out.println("kaska kaka " + listofColumns.size());
+        //denne for løkken legger til kolonner dynamisk.
+        //Dette må til da vi på forhånd ikke vet hvor mange kolonner det er og ikke har sjans til å lage en modell som forteller det
         for (Kolonne kol : listofColumns) {
-            //We are using non property style for making dynamic table
 
             final int j = counter;
             TableColumn col = new TableColumn(kol.NAVN);
@@ -113,57 +113,42 @@ public class Table {
             });
 
             col.prefWidthProperty().bind(tableView.widthProperty().divide(4)); //for å automatisere bredden på kolonnene 
-            //col.setGraphic(new CheckBox());
+
             col.setUserData(counter);
             tableView.getColumns().add(col);
-//System.out.println("enototot");
+
             counter++;
 
         }
+
+        //deretter legger vi til alle feltene i de riktige kolonnene
         int teller = 0;
         System.out.println(tbl.numberofRows);
-        for (int a = 1; a <=tbl.numberofRows ;a++) {
+        for (int a = 1; a <= tbl.numberofRows; a++) {
             ObservableList<String> row = FXCollections.observableArrayList();
-       
+
             for (int i = 1; i <= listofColumns.size(); i++) {
                 Kolonne kol = listofColumns.get(i - 1);
 
-                
-              try{
-                  row.add(kol.allFields().get(teller));
-               
-                      
-               }
-                       
-             
-                catch(NullPointerException npe)
-                {
-                          row.add(" ");
-                }
-                
-              
+                try {
+                    row.add(kol.allFields().get(teller));
 
-                //  System.out.println("Verdien " + kol.allFields().get(teller));
+                } //Dersom SQL databasen ikke har noe data i denne kolonnen(null), legger vi bare inn et tomt felt
+                catch (NullPointerException npe) {
+                    row.add(" ");
+                }
+
             }
             teller++;
-
+            //legger til all dataen i arraylisten "dataen"
             dataen.add(row);
 
         }
-
+        //laster inn all dataen i tableviewen.
         tableView.setItems(dataen);
-
-        //deretter legges all dataen til i kolonnene ved hjelp av rader
-        //    for (int i = 1; i <= listofColumns.size(); i++) {
-        //     tableView.getItems().add(row);
-        //  tableView.setItems(dataen);
+        //returnerer tableviewn til tableviewn som kalte på denne metoden
         return tableView;
 
     }
-    public boolean isEmpty(String streng){
-   if (streng == null) 
-      return true;
-   return false;
-}
 
 }
