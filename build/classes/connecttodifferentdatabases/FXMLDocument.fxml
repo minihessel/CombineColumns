@@ -16,7 +16,7 @@
             <Button fx:id="button3" layoutX="95.0" layoutY="93.0" onAction="#handleButtonNewGroup" text="CONNECT" />
             <TextField fx:id="textField" layoutX="84.0" layoutY="55.0" text="The query" />
             <Button fx:id="button21" layoutX="23.0" layoutY="236.0" onAction="#handleCreateNewCombined" text="Create new combined column" />
-            <Button fx:id="button22" layoutX="98.0" layoutY="332.0" onAction="#handleButtonAction4" text="Combine" />
+
             <PieChart fx:id="pieChart" layoutX="-23.0" layoutY="480.0" prefHeight="268.0" prefWidth="323.0" />
          </children>
       </AnchorPane>

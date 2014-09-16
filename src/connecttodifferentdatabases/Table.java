@@ -3,7 +3,6 @@ package connecttodifferentdatabases;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -11,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
 /**
@@ -28,7 +28,7 @@ public class Table {
 
     public Table() {
         listofColumns = new ArrayList<>();
-    dataen = FXCollections.observableArrayList();
+        dataen = FXCollections.observableArrayList();
 
     }
 
@@ -51,13 +51,44 @@ public class Table {
         //deretter legges all dataen til i kolonnene ved hjelp av rader
         while (rs.next()) {
             numberofRows++;
+            ObservableList<String> row = FXCollections.observableArrayList();
+
             for (Kolonne k : listofColumns) {
-                String item = rs.getString(k.NAVN);
-                k.addField(item);
+                k.addField(rs.getString(k.NAVN));
 
             }
 
+            //deretter legger vi til alle feltene i de riktige kolonnene
         }
+
+    }
+
+    public void loadDataCombined(Table tbl) {
+
+        int teller = 0;
+
+        for (int a = 1; a <= tbl.numberofRows; a++) {
+            ObservableList<String> row = FXCollections.observableArrayList();
+
+            for (int i = 1; i <= listofColumns.size(); i++) {
+                Kolonne kol = listofColumns.get(i - 1);
+
+                try {
+                    System.out.println(kol.allFields().get(1) + " herr");
+                    row.add(kol.allFields().get(teller));
+
+                } //Dersom SQL databasen ikke har noe data i denne kolonnen(null), legger vi bare inn et tomt felt
+                catch (NullPointerException npe) {
+                    row.add(" ");
+                }
+
+            }
+            teller++;
+            //legger til all dataen i arraylisten "dataen"
+            dataen.add(row);
+
+        }
+        System.out.println("lagt til");
 
     }
 
@@ -89,13 +120,9 @@ public class Table {
 
     }
 
-    public String storString() {
-        return listofColumns.toString();
-    }
-
     public TableView fillTableView(TableView tableView, Table tbl) {
+
         //Metode for å fylle tableview med kolonner og rader
-      
         //først henter vi ut alle kolonnene og legger til de i tableview
         int counter = 0;
 
@@ -121,34 +148,35 @@ public class Table {
 
         }
 
-        //deretter legger vi til alle feltene i de riktige kolonnene
-        int teller = 0;
-        System.out.println(tbl.numberofRows);
-        for (int a = 1; a <= tbl.numberofRows; a++) {
-            ObservableList<String> row = FXCollections.observableArrayList();
+        for (Kolonne kol : listofColumns) {
 
-            for (int i = 1; i <= listofColumns.size(); i++) {
-                Kolonne kol = listofColumns.get(i - 1);
-
-                try {
-                    row.add(kol.allFields().get(teller));
-
-                } //Dersom SQL databasen ikke har noe data i denne kolonnen(null), legger vi bare inn et tomt felt
-                catch (NullPointerException npe) {
-                    row.add(" ");
-                }
-
-            }
-            teller++;
-            //legger til all dataen i arraylisten "dataen"
-            dataen.add(row);
+            dataen.addAll(kol.allFields());
 
         }
+
+        dataen = transpose(dataen);
+
         //laster inn all dataen i tableviewen.
         tableView.setItems(dataen);
         //returnerer tableviewn til tableviewn som kalte på denne metoden
         return tableView;
 
+    }
+
+    static <T> ObservableList<List<String>> transpose(ObservableList<List<String>> table) {
+        ObservableList<List<String>> ret
+                = FXCollections.observableArrayList();
+
+        // = <List<String>>();
+        final int N = table.get(0).size();
+        for (int i = 0; i < N; i++) {
+            ObservableList<String> col = FXCollections.observableArrayList();
+            for (List<String> row : table) {
+                col.add(row.get(i));
+            }
+            ret.add(col);
+        }
+        return ret;
     }
 
 }

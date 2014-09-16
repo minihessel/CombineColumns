@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package connecttodifferentdatabases;
-
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -20,17 +18,16 @@ import javafx.scene.control.ChoiceBox;
  * @author Eskil
  */
 public class SQL_manager {
-     static Connection conn;
+
+    static Connection conn;
 
     static Statement st;
 
-    public SQL_manager () {
-    
-        
-    }
-    
+    public SQL_manager() {
 
-      public void getAllTables(ChoiceBox choiceBox) throws SQLException {
+    }
+
+    public void getAllTables(ChoiceBox choiceBox) throws SQLException {
         //Henter ut alle tabellene i databasen ved hjelp av metadata
         DatabaseMetaData md = SQL_manager.conn.getMetaData();
         ResultSet rs = md.getTables(null, null, "%", null);
@@ -41,68 +38,50 @@ public class SQL_manager {
         }
 
     }
-   
 
-   protected Connection getConnection(String mySqlAdress, Integer myPort,String sqlInstance) throws SQLException{
-    
-        
+    protected Connection getConnection(String mySqlAdress, Integer myPort, String sqlInstance) throws SQLException {
+
         try {
             // Step 1: Load the JDBC driver.
             Class.forName("com.mysql.jdbc.Driver").newInstance();
 
             System.out.println("Driver Loaded.");
             // Step 2: Establish the connection to the database.
-              String myUrl = "jdbc:mysql://"+mySqlAdress+":"+myPort + "/" + sqlInstance;
+            String myUrl = "jdbc:mysql://" + mySqlAdress + ":" + myPort + "/" + sqlInstance;
 
             conn = DriverManager.getConnection(myUrl, "root", "root");
             System.out.println("Got Connection.");
-
+            conn.setAutoCommit(false);
             st = conn.createStatement();
+
         } catch (Exception e) {
             System.err.println("Got an exception! ");
             e.printStackTrace();
 
         }
         return conn;
-   }
+    }
 
- 
+    protected ResultSet getDataFromSQL(String mySqlAdress, Integer myPort, String sqlInstance, String SQL) throws SQLException {
 
-          protected ResultSet getDataFromSQL(String mySqlAdress, Integer myPort,String sqlInstance,String SQL) throws SQLException{
-       
         try {
             //String myDriver = "org.gjt.mm.mysql.Driver";
-            
-            String myUrl = "jdbc:mysql://"+mySqlAdress+":"+myPort + "/" + sqlInstance;
+            conn.setAutoCommit(false);
+            st = conn.createStatement();
+            String myUrl = "jdbc:mysql://" + mySqlAdress + ":" + myPort + "/" + sqlInstance;
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println(myUrl
-              + "user=root&password=1234");
-            DriverManager.setLoginTimeout(2);
-            //Connection conn = DriverManager.getConnection(myUrl, "root", "1234");
-          
-            DriverManager.setLoginTimeout(2);
-             
-            ResultSet rs = conn.createStatement().executeQuery(SQL);
-              
-            return rs; 
-        } 
-      catch (Exception e)
-{
-  System.err.println("Got an exception! ");
-  System.err.println(e.getMessage());
-}
+                    + "user=root&password=1234");
+
+            st.setFetchSize(50000);
+
+            ResultSet rs = st.executeQuery(SQL);
+
+            return rs;
+        } catch (Exception e) {
+            System.err.println("Got an exception! ");
+            System.err.println(e.getMessage());
+        }
         return null;
     }
 }
-    
-    
-
-    
-    
-    
-    
-
-
-    
-    
-

@@ -3,17 +3,22 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/checkForInteger.java</file>
             <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/FXMLDocumentController.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/ConnectToDifferentDatabases.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Rad.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/CombinedTable.java</file>
             <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/SQL_manager.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/ColumnTableComperator.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/aa.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/TableNames.java</file>
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Rader.java</file>
             <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Table.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/FXMLDocument.fxml</file>
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Kolonne.java</file>
+        </group>
+        <group name="Ferdige funksjonaliteter">
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/FXMLDocumentController.java</file>
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/SQL_manager.java</file>
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Rader.java</file>
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Table.java</file>
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Kolonne.java</file>
+        </group>
+        <group name="Testing">
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/FXMLDocumentController.java</file>
+            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Table.java</file>
             <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Kolonne.java</file>
         </group>
     </open-files>

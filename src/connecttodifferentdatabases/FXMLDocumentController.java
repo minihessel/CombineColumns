@@ -57,7 +57,6 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private TextField textField;
- 
 
     @FXML
     private TreeView treeViewCombined;
@@ -95,8 +94,8 @@ public class FXMLDocumentController implements Initializable {
     AnchorPane anchorPane;
     @FXML
     AnchorPane anchorPane2;
-       @FXML
-    PieChart pieChart; 
+    @FXML
+    PieChart pieChart;
 
     //Map  = new HashMap();
     Map<TreeItem, List> mapOverKolonnerOgTreItems = new HashMap<TreeItem, List>();
@@ -112,17 +111,9 @@ public class FXMLDocumentController implements Initializable {
     Image nodeImage = new Image(
             getClass().getResourceAsStream("root.png"));
 
-    @FXML
-    private void handleGroup1(ActionEvent event) throws SQLException {
 
-    }
 
-    @FXML
-    private void handleGroup2(ActionEvent event) throws SQLException {
 
-    }
-
-    //For combining
     @FXML
     private void handleButtonAction(ActionEvent event) throws SQLException {
 
@@ -137,10 +128,7 @@ public class FXMLDocumentController implements Initializable {
         createTabPaneWithTable();
     }
 
-    @FXML
-    private void handleButtonAction4(ActionEvent event) throws SQLException {
 
-    }
 
     @FXML
     private void handleCreateNewCombined(ActionEvent event) throws SQLException {
@@ -184,15 +172,17 @@ public class FXMLDocumentController implements Initializable {
         kombinerteKolonnerRoot.getChildren().add(treItem);
     }
 
-    private void makeTableViewWithCombinedColumns(Table tbl, TableView tableView) {
+    private void makeTableViewWithCombinedColumns(Table tbl, TableView tableView){
         tbl.listofColumns.clear();
         tableView.getItems().clear();
         tableView.getColumns().clear();
 
         int counter = 0;
         tbl.numberofRows = 0;
+
         //Først looper vi igjennom combinedColumn av lister med kolonner(med andre ord er en liste i denne combinedColumn en kombinert kolonne)
         for (List<Kolonne> list : listOfCombinedColumns) {
+
             Collections.sort(list, new ColumnTableComperator());
             int antallRader = 0;
 
@@ -207,13 +197,16 @@ public class FXMLDocumentController implements Initializable {
                         = antallRader;
             }
 
+        
             //Deretter lager vi den kombinerte kolonnen
             tbl.loadCombinedColumns(list, listOfColumnNames.get(counter), tbl);
             counter++;
-        }
 
+        }
+   
         //deretter lager vi tableviewet med alle de kombinerte kolonnene. 
         tableView = tbl.fillTableView(tableView, tbl);
+
     }
 
     private void createTabPaneWithTable() throws SQLException {
@@ -225,7 +218,7 @@ public class FXMLDocumentController implements Initializable {
         String query = textField.getText();
 
         //her skjer oppkoblingen
-        sql_manager.getConnection("localhost", 8889, "eskildb");
+        sql_manager.getConnection("localhost", 8889, "employees");
 
         //laster inn dataen med en query
         tabellen.loadData(query, sql_manager, tabellen, tabPaneCounter);
@@ -407,13 +400,12 @@ public class FXMLDocumentController implements Initializable {
         tabPane.getTabs().add(tab2);
 
     }
-    
-    
-      protected void getPieChartData(Integer userChosenDataValueColumnIndex, Integer userChosenDataNameColumnIndex) {
-         userChosenDataNameColumnIndex = 0;
-           userChosenDataValueColumnIndex= 1;
-    ObservableList<List<String>> dataen = FXCollections.observableArrayList();
-    dataen = tbl3.dataen;
+
+    protected void getPieChartData(Integer userChosenDataValueColumnIndex, Integer userChosenDataNameColumnIndex) {
+       userChosenDataNameColumnIndex = 0;
+        userChosenDataValueColumnIndex = 1;
+        ObservableList<List<String>> dataen = FXCollections.observableArrayList();
+        dataen = tbl3.dataen;
         System.out.println("Kolonne id for data er " + userChosenDataValueColumnIndex + "Kolonne id for name er " + userChosenDataNameColumnIndex);
         ObservableList<PieChart.Data> pieChartData
                 = FXCollections.observableArrayList(EasyBind.map(dataen, rowData -> {
@@ -423,8 +415,8 @@ public class FXMLDocumentController implements Initializable {
                 }));
         System.out.println("aa " + pieChartData.get(0));
         pieChart.setData(pieChartData);
+              
 
-        
     }
 
     private void makeTreeViewDragAble(TreeView treeView) {
@@ -454,6 +446,4 @@ public class FXMLDocumentController implements Initializable {
         });
     }
 
-      
-    
 }
