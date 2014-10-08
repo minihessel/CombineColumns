@@ -17,6 +17,8 @@ public class Kolonne {
 
     //En kolonne inneholder felter(altså dataen i en kolonne
     private List<String> fields;
+    
+    
 
     public Kolonne(String kolonneNavn, Integer kolonneIndex, Table tbl1) {
         //konstruktøren

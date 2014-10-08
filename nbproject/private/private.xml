@@ -16,10 +16,6 @@
             <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Table.java</file>
             <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Kolonne.java</file>
         </group>
-        <group name="Testing">
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/FXMLDocumentController.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Table.java</file>
-            <file>file:/Users/Eskil/NetBeansProjects/ConnectToDifferentDatabases/src/connecttodifferentdatabases/Kolonne.java</file>
-        </group>
+        <group name="Testing"/>
     </open-files>
 </project-private>
